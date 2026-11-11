@@ -1,0 +1,36 @@
+name: nginx-dr-tls-gateway
+
+services:
+  nginx:
+    image: tls-gost-nginx:latest
+
+    build:
+      context: ./gost-nginx
+
+    ports:
+      - "127.0.0.1:8483:443"
+
+    volumes:
+      - type: bind
+        source: ./gost-nginx/nginx.conf
+        target: /etc/nginx/nginx.conf
+        read_only: true
+        bind:
+          create_host_path: false
+
+      - type: bind
+        source: ./gost-certs/gost-server.crt
+        target: /etc/nginx/certs/gost-server.crt
+        read_only: true
+        bind:
+          create_host_path: false
+
+      - type: bind
+        source: ./gost-certs/gost-server.key
+        target: /etc/nginx/certs/gost-server.key
+        read_only: true
+        bind:
+          create_host_path: false
+
+    stop_signal: SIGQUIT
+    stop_grace_period: 30s
